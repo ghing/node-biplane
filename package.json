@@ -1,0 +1,16 @@
+{
+  "name": "biplane",
+  "version": "0.0.0",
+  "description": "Wrapper around TCB's Airplanes in the Sky application to make data available in other platforms.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Geoff Hing",
+  "license": "MIT",
+  "dependencies": {
+    "request": "~2.33.0",
+    "cheerio": "~0.13.1",
+    "csv": "~0.3.6"
+  }
+}
