@@ -12,5 +12,9 @@
     "request": "~2.33.0",
     "cheerio": "~0.13.1",
     "csv": "~0.3.6"
+  },
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/ghing/node-biplane.git"
   }
 }
