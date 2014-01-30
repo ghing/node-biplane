@@ -32,6 +32,9 @@ Biplane.prototype.parseJobRow = function(row) {
   // created
   job.created = row[32];
 
+  // deliver_to.when.before
+  job.deliverBefore = row[36];
+
   // owner
   // Currently in the form "Key('UserProfile', 22001)".  Use a regex to parse
   // out just the ID.
