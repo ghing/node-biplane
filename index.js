@@ -32,6 +32,9 @@ Biplane.prototype.parseJobRow = function(row) {
   // created
   job.created = row[32];
 
+  // completed
+  job.completed = row[20];
+
   // deliver_to.when.before
   job.deliverBefore = row[36];
 
