@@ -2,6 +2,7 @@ var request = require('request');
 var querystring = require('querystring');
 var oogle = require('./oogle');
 var csv = require('csv');
+var cheerio = require('cheerio');
 
 function parseUserProfileId(s) {
   var matches = s.match(/\d+/);
@@ -86,6 +87,63 @@ Biplane.prototype.parseJobsCSV = function(body, callback) {
   });
 };
 
+var parseRole = function(text) {
+  var re = /.*(Administrator|Client|Inactive|Staff).*/i;
+  var result = re.exec(text);
+
+  if (result === null) {
+    return null;
+  }
+
+  return result[1];
+};
+
+var parseContactInfo = function(text) {
+  var contactInfo = {};
+  var lines = text.split('\n');
+  var parts;
+
+  for (var i = 0; i < lines.length; i++) {
+    parts = lines[i].split(':');
+    if (parts.length > 1) {
+      contactInfo[parts[0].trim().toLowerCase()] = parts[1].trim();
+    }
+  }
+
+  return contactInfo;
+};
+
+Biplane.prototype.parseProfiles = function(body, callback) {
+  var that = this;
+  var $ = cheerio.load(body);
+  var profiles = [];
+
+  $('table').first().find('tr').each(function(i, elem) {
+    // First row is the header
+    if (i > 0) {
+      var $row = $(this);
+      var profile = {
+        id: $row.find('td').eq(0).text(),
+        name: $row.find('td').eq(1).text(),
+        role: parseRole($row.find('td').eq(3).text())
+      };
+      var contactInfo = parseContactInfo($row.find('td').eq(2).text());
+
+      if (contactInfo.phone) {
+        profile.phone = contactInfo.phone;
+      }
+
+      if (contactInfo.email) {
+        profile.email = contactInfo.email;
+      }
+
+      profiles.push(profile);
+    }
+  });
+
+  callback(profiles);
+};
+
 Biplane.prototype.export = function(opts, callback) {
   var that = this;
   var url = this._baseUrl + 'jobs/export' + '?' +  querystring.stringify(opts);
@@ -107,3 +165,26 @@ Biplane.prototype.export = function(opts, callback) {
     });
   }
 };
+
+Biplane.prototype.profiles = function(callback) {
+  var that = this;
+  var url = this._baseUrl + 'profiles';
+
+  if (!this._authenticated) {
+    oogle({
+      startUrl: this._baseUrl + 'login_rider',
+      url: url,
+      username: this.options.username,
+      password: this.options.password
+    }, function(error, response, body) {
+       that._authenticated = true;
+       that.parseProfiles(body, callback);
+    });
+  }
+  else {
+    request(url, function(error, response, body) {
+      that.parseProfiles(body, callback);
+    });
+  }
+};
+
