@@ -45,7 +45,7 @@ Biplane.prototype.parseJobRow = function(row) {
   job.ownerId = row[6] ? parseUserProfileId(row[6]) : null;
 
   // payment.order_total
-  job.orderTotal = parsePrice(row[7]);
+  job.orderTotal = row[7] ? parsePrice(row[7]) : null;
 
   // id
   job.id = row[8];
@@ -62,13 +62,13 @@ Biplane.prototype.parseJobRow = function(row) {
   job.status = row[17];
 
   // payment.tip (watch out for values like "Will tip with cash")
-  job.tip = parsePrice(row[18], row[18]);
+  job.tip = row[18] ? parsePrice(row[18], row[18]) : null;
 
   // payment.method
   job.paymentMethod = row[25];
 
   // payment.delivery_fee
-  job.deliveryFee = parsePrice(row[38]);
+  job.deliveryFee = row[38] ? parsePrice(row[38]) : null;
 
   return job;
 };
