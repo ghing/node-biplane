@@ -160,7 +160,10 @@ Biplane.prototype.export = function(opts, callback) {
     });
   }
   else {
-    request(url, function(error, response, body) {
+    request({
+      uri: url,
+      jar: true
+    }, function(error, response, body) {
       that.parseJobsCSV(body, callback);
     });
   }
@@ -182,7 +185,10 @@ Biplane.prototype.profiles = function(callback) {
     });
   }
   else {
-    request(url, function(error, response, body) {
+    request({
+      uri: url,
+      jar: true
+    }, function(error, response, body) {
       that.parseProfiles(body, callback);
     });
   }
